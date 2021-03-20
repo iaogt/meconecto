@@ -1,62 +1,21 @@
 import 'react-native-gesture-handler'
-import React,{ useState } from 'react';
-import { StyleSheet, Text, View,Platform,StatusBar,Modal } from 'react-native';
-import FormularioUsuarioNuevo from './src/formulariousuarionuevo/formulariousuarionuevo';
-import Listado from './src/listado/listado';
-import Detalle from './src/detalle/detalle';
-import Cuestionario from './src/Cuestionario/Cuestionario';
-import Resultado from './src/Cuestionario/Resultado';
+import React,{ useState,useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack'; 
+import { HomeScreen, DetalleScreen, CuestionarioScreen, ResultadoScreen,RegisterScreen } from './src/screens'
+import auth from '@react-native-firebase/auth';
+import { Button } from 'react-native';
+import database from '@react-native-firebase/database';
 
-function ResultadoScreen({navigation}){
-  return (
-    <View>
-      <Resultado avanza={()=>navigation.popToTop()}></Resultado>
-    </View>
-  )
-}
-
-function CuestionarioScreen({navigation}){
-  return (
-    <View>
-      <Cuestionario avanza={()=>navigation.navigate("Resultado")}></Cuestionario>
-    </View>
-  )
-}
-
-function DetalleScreen({navigation}){
-  return (
-    <View>
-      <Detalle avanza={()=>navigation.navigate("Cuestionario")}></Detalle>
-    </View>
-  )
-}
-
-function HomeScreen({navigation}){
-
-  const [modalVisible,setModalVisible] = useState(true);
-
-  return (
-    <View style={styles.container}>
-    <StatusBar backgroundColor="#16467A" barStyle="dark-content" hidden={false}></StatusBar>
-    <Listado avanzar={()=>navigation.navigate('Detalle')} ></Listado>
-    <Modal
-      animationType="slide"
-      visible={modalVisible}
-      onRequestClose={()=>{
-        setModalVisible(!modalVisible);
-      }}>
-      <FormularioUsuarioNuevo onregister={()=>setModalVisible(false)} ></FormularioUsuarioNuevo>
-    </Modal>
-  </View>
-  )
-}
 
 const Stack = createStackNavigator();
 
 
 export default function App() {
+
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
+
 
   const commonOptions = {
     headerStyle:{
@@ -65,28 +24,51 @@ export default function App() {
     headerTintColor: '#fff',
   }
 
+  const homeOptions = {...commonOptions,headerRight: () => (
+    <Button
+      onPress={() => {
+        database()
+        .ref('/users/'+user.user.uid)
+        .remove().then(d=>{
+          console.log("eliminado");
+        }).catch(b=>{
+          console.log("error al eliminar");
+        })
+        auth().signOut().then(()=>console.log("cerror sesi[on"))
+      }}
+      title="Salir"
+    />
+  )}
+
+  // Handle user state changes
+  function onAuthStateChanged(user) {
+    setUser(user);
+    if (initializing) setInitializing(false);
+  }
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="MeConectoSinClavos" component={HomeScreen} options={commonOptions}/>
-        <Stack.Screen name="Detalle" component={DetalleScreen} options={commonOptions}/>
-        <Stack.Screen name="Cuestionario" component={CuestionarioScreen} options={commonOptions}/>
-        <Stack.Screen name="Resultado" component={ResultadoScreen} options={commonOptions}/>
-
+        {
+          (user) ?
+          <>
+          <Stack.Screen name="MeConectoSinClavos" component={HomeScreen} options={homeOptions}/>
+          <Stack.Screen name="Detalle" component={DetalleScreen} options={commonOptions}/>
+          <Stack.Screen name="Cuestionario" component={CuestionarioScreen} options={commonOptions}/>
+          <Stack.Screen name="Resultado" component={ResultadoScreen} options={commonOptions}/>
+          </>
+          :
+          <>
+          <Stack.Screen name="Regístrate" component={RegisterScreen} options={commonOptions}/>
+          </>
+        }
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'stretch',
-    justifyContent: 'flex-start',
-    fontFamily:"DaysOne-Regular"
-  },
-  statusBar:{
-    height:20
-}
-});
