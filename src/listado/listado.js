@@ -1,40 +1,14 @@
-import React from 'react';
-import { View, FlatList,Text,StyleSheet,ImageBackground,TouchableOpacity } from 'react-native';
+import React,{useEffect,useState} from 'react';
+import { View, FlatList,Text,StyleSheet,ImageBackground,TouchableOpacity,Modal,Linking } from 'react-native';
+import {useSelector} from 'react-redux';
+import UserEntity from '../entities/userEntity';
+import FormularioUsuarioNuevo from '../formulariousuarionuevo/formulariousuarionuevo';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import {useDispatch} from 'react-redux';
+import ActivityFactory from '../entities/activityFactory';
 
-const lista = [
-    {
-        id:"a",
-        title:'Sexting',
-        img:"https://meconectosinclavos.awelp.com/wp-content/uploads/2020/12/video-1-sexting.jpg"
-    },
-    {
-        id:"b",
-        title:'Juegos Peligrosos',
-        img:"https://meconectosinclavos.awelp.com/wp-content/uploads/2020/12/Video-3-los-juegos-en-linea-son-peligrosos.jpg"
 
-    },
-    {
-        id:"c",
-        title:'Publicidad',
-        img:"https://meconectosinclavos.awelp.com/wp-content/uploads/2020/12/Video-4-privacidad-y-control-parental.jpg"
-    },
-    {
-        id:"d",
-        title:'Desnudos',
-        img:"https://meconectosinclavos.awelp.com/wp-content/uploads/2020/12/Video-5-alguien-me-presiona-para-enviar-ma%CC%81s-fotos-sin-ropa.jpg"
-    },
-    {
-        id:"e",
-        title:'Agresión Sexual',
-        img:"https://meconectosinclavos.awelp.com/wp-content/uploads/2020/12/agresion-sexual-final.jpg"
-    },
-    {
-        id:"f",
-        title:'Exhibicionismo',
-        img:"https://meconectosinclavos.awelp.com/wp-content/uploads/2020/12/exhibicion-sexual-final.jpg"
-
-    }
-];
+const lista = ActivityFactory.getActivities();
 
 const lista2 = [
     {
@@ -48,13 +22,108 @@ const lista2 = [
         points:100
     },
     {
-        id:"cc",
-        title:'Chiquimula',
+        id:"ch",
+        title:'Chimaltenango',
         points:90
+    },
+    {
+        id:"chiq",
+        title:"Chiquimula",
+        points:0
+    },
+    {
+        id:"esc",
+        title:"Escuintla",
+        points:0
+    },
+    {
+        id:"prog",
+        title:"El Progreso",
+        points:0
+    },
+    {
+        id:"guat",
+        title:"Guatemala",
+        points:0
+    },
+    {
+        id:"huehue",
+        title:"Huehuetenango",
+        points:0
+    },
+    {
+        id:"iz",
+        title:"Izabal",
+        points:0
+    },
+    {
+        id:"jal",
+        title:"Jalapa",
+        points:0
+    },
+    {
+        id:"jut",
+        title:"Jutiapa",
+        points:0
+    },
+    {
+        id:"maza",
+        title:"Mazatenango",
+        points:0
+    },
+    {
+        id:"peten",
+        title:"Petén",
+        points:0
+    },
+    {
+        id:"que",
+        title:"Quetzaltenango",
+        points:0
+    },
+    {
+        id:"qui",
+        title:"Quiché",
+        points:0
+    },
+    {
+        id:"reu",
+        title:"Retalulheu",
+        points:0
+    },
+    {
+        id:"sac",
+        title:"Sacatepequez",
+        points:0
+    },
+    {
+        id:"san",
+        title:"San Marcos",
+        points:0
+    },
+    {
+        id:"santa",
+        title:"Santa Rosa",
+        points:0
+    },
+    {
+        id:"sol",
+        title:"Sololá",
+        points:0
+    },
+    {
+        id:"toto",
+        title:"Totonicapán",
+        points:0
+    },
+    {
+        id:"za",
+        title:"Zacapa",
+        points:0
     }
 ]
 
-const Item = ({title,img,avanza})=>(
+const Item = ({title,img,avanza,puntos})=>(
     <TouchableOpacity
     onPress={avanza}>
     <View style={styles.item1}>
@@ -64,7 +133,14 @@ const Item = ({title,img,avanza})=>(
                     <Text style={styles.t1}>{title}</Text>
                 </View>
                 <View style={{flex:0.3,alignContent:"flex-end"}}>
-                    <Text style={styles.t2}>{0}</Text>
+                    {(puntos==0) ?
+                    <Text style={styles.t2}>0</Text>
+                    : (puntos<30) ? 
+                        <Icon name="trophy" size={30} color="#cd7f32" style={{marginLeft:40,marginTop:5}}/> 
+                        : (puntos>30 && puntos < 70) ?  <Icon name="trophy" size={30} color="#C0C0C0" /> 
+                            : (puntos>70) ? <Icon name="trophy" size={30} color="#FFD700" /> : null
+                    }
+
                 </View>
             </View>
             </ImageBackground>
@@ -76,75 +152,107 @@ const Item2 = ({title,points})=>(
     <TouchableOpacity>
     <View>
         <View style={{flexDirection:'row'}}>
-            <View style={{flex:0.7}}>
-                <Text>{title}</Text>
+            <View style={{flex:0.7,paddingTop:5,paddingBottom:5,justifyContent:"center"}}>
+                <Text style={{fontSize:18,marginLeft:5}}>{title}</Text>
             </View>
-            <View style={{flex:0.3,alignContent:"flex-end"}}>
-                <Text>{points}</Text>
+            <View style={{flex:0.3,alignContent:"flex-end",paddingTop:5,paddingBottom:5,justifyContent:"center"}}>
+                <Text style={{alignContent:"flex-end"}}>{points}</Text>
             </View>
         </View>
     </View>
     </TouchableOpacity>
 )
 
-export default class Listado extends React.Component{
+export default function Listado(props){
+    const [selView,setView] = useState(1)
+    const quid = state => state.users;
+    const iuid = useSelector(quid);
+    const [userdata,setData] = useState(null);
+    const [modalvisible,setModal] = useState(false);
+    const dispatch = useDispatch();
+    const [topranking,setRank] = useState([]);
 
-    constructor(props){
-        super(props);
-        this.state = { selView:1 };
-        this.selectListado = this.selectListado.bind(this);
-        this.selectRanking = this.selectRanking.bind(this);
+    useEffect(()=>{
+        if(iuid.userid!=""){
+            UserEntity.loadUser(iuid.userid)
+            .then((data)=>{
+                if(data!=null){
+                    setData(data);
+                    dispatch({type:'user/gotdata',payload:data});
+                }else{
+                    setModal(true);
+                }
+            })
+            .catch(e=>{
+                setModal(true);
+            })
+        }else{
+            console.log("error de autenticacin de usuario");
+        }
+        let topranking = [...lista2];
+        topranking = topranking.sort((a,b)=>{ return a.points<b.points })
+        setRank(topranking);
+    },[])
+
+    const selecciona = (idcompetencia)=>{
+        console.log("competencia:");
+        console.log(idcompetencia);
+        dispatch({type:"activity/selected",payload:idcompetencia})
+        props.avanzar();
     }
 
-    renderizable = ({item}) => (
-        <Item title={item.title} img={item.img} avanza={this.props.avanzar}/>
-    );
+    const renderizable = (({item}) => {
+        console.log("userdata");
+        console.log(userdata);
+        let pts=0;
+        if(userdata!=null){
+            pts = userdata['competencias'][item.id]['punteo'];
+        }
+        return (
+            <Item title={item.title} img={item.img} avanza={()=>selecciona(item.id)} puntos={pts}/>
+            )
+        });
 
-    renderizable2 = ({item}) => (
+    const renderizable2 = ({item}) => (
         <Item2 title={item.title} points={item.points}/>
     );
 
-    selectListado(){
-        this.setState({selView:1});
-    }
 
-    selectRanking(){
-        this.setState({selView:2});
-    }
 
-    render(){
-        return (
-            <View style={styles.container}>
-                <View style={styles.tabis}>
-                        <View style={(this.state.selView==1) ? [styles.tabi,styles.selectedtab] : styles.tabi}>
-                        <TouchableOpacity onPress={this.selectListado}>
+
+    return (
+        <View style={styles.container}>
+            <View style={styles.tabis}>
+                    <View style={(selView==1) ? [styles.tabi,styles.selectedtab] : styles.tabi}>
+                        <TouchableOpacity onPress={()=>setView(1)}>
                             <Text style={styles.tabitxt}>Competencias</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={(this.state.selView==2) ? [styles.tabi,styles.selectedtab] : styles.tabi}>
-                        <TouchableOpacity onPress={this.selectRanking}>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={(selView==2) ? [styles.tabi,styles.selectedtab] : styles.tabi}>
+                        <TouchableOpacity onPress={()=>setView(2)}>
                             <Text style={styles.tabitxt}>Ranking</Text>
-                            </TouchableOpacity>
-                        </View>
-                </View>
-                {
-                    (this.state.selView==1) ?
-                <FlatList
-                    data={lista}
-                    renderItem={this.renderizable}
-                    keyExtractor={item=>item.id}
-                    />
-                    :
-                    <FlatList
-                    data={lista2}
-                    renderItem={this.renderizable2}
-                    keyExtractor={item=>item.id}
-                    />
-
-                }
+                        </TouchableOpacity>
+                    </View>
             </View>
-        )
-    }
+            {
+            (selView==1) ?
+                <FlatList
+                data={lista}
+                renderItem={renderizable}
+                keyExtractor={item=>item.id}
+                />
+            :
+                <FlatList
+                data={topranking}
+                renderItem={renderizable2}
+                keyExtractor={item=>item.id}
+                />
+            }
+            <Modal visible={modalvisible} onRequestClose={()=>{}}>
+                <FormularioUsuarioNuevo userid={iuid.userid} onregister={()=>setModal(false)}></FormularioUsuarioNuevo>
+            </Modal>
+        </View>
+    )
 }
 
 const styles = StyleSheet.create({
@@ -197,7 +305,8 @@ const styles = StyleSheet.create({
         opacity:1,
         fontSize:25,
         textAlign:"right",
-        fontFamily:"normal"
+        fontFamily:"normal",
+        marginRight:20
       },
     b1:{
         backgroundColor: "#2064AC",

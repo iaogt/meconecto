@@ -5,7 +5,7 @@ import Cuestionario from '../Cuestionario/Cuestionario';
 export function CuestionarioScreen({navigation}){
     return (
       <View>
-        <Cuestionario avanza={()=>navigation.navigate("Resultado")}></Cuestionario>
+        <Cuestionario avanza={()=>navigation.goBack()} ></Cuestionario>
       </View>
     )
   }

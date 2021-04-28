@@ -10,7 +10,7 @@ export function HomeScreen({navigation}){
       <View style={styles.container}>
       <StatusBar backgroundColor="#16467A" barStyle="dark-content" hidden={false}></StatusBar>
       <Listado avanzar={()=>navigation.navigate('Detalle')} ></Listado>
-    </View>
+      </View>
     )
   }
 

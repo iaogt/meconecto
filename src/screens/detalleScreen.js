@@ -5,7 +5,7 @@ import Detalle from '../detalle/detalle';
 export function DetalleScreen({navigation}){
     return (
       <View>
-        <Detalle avanza={()=>navigation.navigate("Cuestionario")}></Detalle>
+        <Detalle avanza={()=>navigation.navigate("Compite")}></Detalle>
       </View>
     )
   }
