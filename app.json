@@ -1,16 +1,4 @@
 {
   "name": "meconecto",
-  "displayName": "meconecto",
-  "expo": {
-    "name": "meconecto",
-    "slug": "meconecto",
-    "version": "1.0.0",
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "splash":{
-      "image":"./src/assets/splashscreen_ige.png",
-      "backgroundColor":"#2064AC"    
-    }
-  }
+  "displayName": "meconecto"
 }

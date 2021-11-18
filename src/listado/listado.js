@@ -1,12 +1,10 @@
-import React,{useEffect,useState} from 'react';
-import { View, FlatList,Text,StyleSheet,ImageBackground,TouchableOpacity,Modal,Linking } from 'react-native';
+import React,{useEffect,useState,useLayoutEffect} from 'react';
+import { View, FlatList,Text,StyleSheet,ImageBackground,TouchableOpacity,Modal,Linking,Image,Dimensions,ScrollView } from 'react-native';
 import {useSelector} from 'react-redux';
 import UserEntity from '../entities/userEntity';
-import FormularioUsuarioNuevo from '../formulariousuarionuevo/formulariousuarionuevo';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {useDispatch} from 'react-redux';
 import ActivityFactory from '../entities/activityFactory';
-
 
 const lista = ActivityFactory.getActivities();
 
@@ -14,17 +12,17 @@ const lista2 = [
     {
         id:"av",
         title:'Alta Verapaz',
-        points:100
+        points:0
     },
     {
         id:"bv",
         title:'Baja Verapaz',
-        points:100
+        points:0
     },
     {
         id:"ch",
         title:'Chimaltenango',
-        points:90
+        points:0
     },
     {
         id:"chiq",
@@ -67,8 +65,8 @@ const lista2 = [
         points:0
     },
     {
-        id:"maza",
-        title:"Mazatenango",
+        id:"suchi",
+        title:"Suchitepequez",
         points:0
     },
     {
@@ -123,21 +121,26 @@ const lista2 = [
     }
 ]
 
+const ancho = Dimensions.get('window').width;
+
 const Item = ({title,img,avanza,puntos})=>(
     <TouchableOpacity
     onPress={avanza}>
     <View style={styles.item1}>
             <ImageBackground source={{uri:img}} style={styles.img1}>
             <View style={styles.b1}>
-                <View style={{flex:0.7}}>
+                <View style={{flex:0.1}}>
+                <Image source={require('../assets/play-button.png')} style={{width:20, height:20,margin:5}}/>
+                </View>
+                <View style={{flex:0.6}}>
                     <Text style={styles.t1}>{title}</Text>
                 </View>
                 <View style={{flex:0.3,alignContent:"flex-end"}}>
                     {(puntos==0) ?
-                    <Text style={styles.t2}>0</Text>
-                    : (puntos<30) ? 
+                    <Text style={styles.t2}></Text>
+                    : (puntos<=30) ? 
                         <Icon name="trophy" size={30} color="#cd7f32" style={{marginLeft:40,marginTop:5}}/> 
-                        : (puntos>30 && puntos < 70) ?  <Icon name="trophy" size={30} color="#C0C0C0" /> 
+                        : (puntos>30 && puntos <= 70) ?  <Icon name="trophy" size={30} color="#C0C0C0" /> 
                             : (puntos>70) ? <Icon name="trophy" size={30} color="#FFD700" /> : null
                     }
 
@@ -148,75 +151,124 @@ const Item = ({title,img,avanza,puntos})=>(
     </TouchableOpacity>
 )
 
-const Item2 = ({title,points})=>(
+const Item2 = ({title,points,inx})=>{
+    let fondo1="#E6E6E6";
+    let fondo2="#F5F5F5"
+    if((inx % 2)==1){
+        fondo1="#fff";
+        fondo2="#fff";
+    }
+    return (
     <TouchableOpacity>
     <View>
-        <View style={{flexDirection:'row'}}>
-            <View style={{flex:0.7,paddingTop:5,paddingBottom:5,justifyContent:"center"}}>
-                <Text style={{fontSize:18,marginLeft:5}}>{title}</Text>
+        <View style={{flexDirection:'row',}}>
+            <View style={{flex:0.5,paddingTop:5,paddingBottom:5,justifyContent:"center",backgroundColor:fondo1}}>
+                <Text style={{fontSize:18,marginLeft:5,textAlign:"center",color:"#246BA6",fontWeight:"bold"}}>{title}</Text>
             </View>
-            <View style={{flex:0.3,alignContent:"flex-end",paddingTop:5,paddingBottom:5,justifyContent:"center"}}>
-                <Text style={{alignContent:"flex-end"}}>{points}</Text>
+            <View style={{flex:0.5,alignContent:"flex-end",paddingTop:5,paddingBottom:5,justifyContent:"center",backgroundColor:fondo2}}>
+                <Text style={{alignContent:"flex-end",textAlign:"center",color:"#246BA6"}}>{points}</Text>
             </View>
         </View>
     </View>
     </TouchableOpacity>
 )
+    }
 
 export default function Listado(props){
     const [selView,setView] = useState(1)
     const quid = state => state.users;
     const iuid = useSelector(quid);
-    const [userdata,setData] = useState(null);
-    const [modalvisible,setModal] = useState(false);
     const dispatch = useDispatch();
     const [topranking,setRank] = useState([]);
 
     useEffect(()=>{
-        if(iuid.userid!=""){
-            UserEntity.loadUser(iuid.userid)
-            .then((data)=>{
-                if(data!=null){
-                    setData(data);
-                    dispatch({type:'user/gotdata',payload:data});
+        UserEntity.getRanking()
+        .then((data)=>{
+            console.log(data);
+            console.log("ranking descargado:");
+            let finalRank = lista2.map(obj=>{
+                let newobj = {};
+                if(data[obj.id]!=undefined){
+                    newobj = {...obj,points:data[obj.id]}
                 }else{
-                    setModal(true);
+                    newobj = obj;
                 }
+                return newobj;
             })
-            .catch(e=>{
-                setModal(true);
-            })
-        }else{
-            console.log("error de autenticacin de usuario");
-        }
-        let topranking = [...lista2];
-        topranking = topranking.sort((a,b)=>{ return a.points<b.points })
-        setRank(topranking);
+            console.log(finalRank);
+            finalRank = finalRank.sort((a,b)=>{ return b.points-a.points })
+            setRank(finalRank);
+        });
     },[])
 
     const selecciona = (idcompetencia)=>{
-        console.log("competencia:");
-        console.log(idcompetencia);
         dispatch({type:"activity/selected",payload:idcompetencia})
-        props.avanzar();
+        props.avanzar(idcompetencia);
     }
 
     const renderizable = (({item}) => {
-        console.log("userdata");
-        console.log(userdata);
         let pts=0;
-        if(userdata!=null){
-            pts = userdata['competencias'][item.id]['punteo'];
+        if(props.datosusuarios!=null){
+            pts = props.datosusuarios['competencias'][item.id]['punteo'];
         }
         return (
             <Item title={item.title} img={item.img} avanza={()=>selecciona(item.id)} puntos={pts}/>
             )
         });
 
-    const renderizable2 = ({item}) => (
-        <Item2 title={item.title} points={item.points}/>
+    const renderizable2 = ({item,index}) => (
+        <Item2 title={item.title} points={item.points} inx={index}/>
     );
+    
+    const descarga = (seccion)=>{
 
+        let url = "";
+        switch(seccion){
+            case "comic":{
+                url = "https://meconectosinclavos.net.gt/wp-content/uploads/2017/02/COMIC.pdf";
+                break;
+            }
+            case "padres":{
+                url = "https://meconectosinclavos.net.gt/wp-content/uploads/2017/02/COMIC.pdf";
+                break;
+            }
+            case "educadores":{
+                url = "https://meconectosinclavos.net.gt/wp-content/uploads/2020/11/mcsc-guia-educadores.pdf";
+                break;
+            }
+            case "comunitarios":{
+                url = "https://meconectosinclavos.net.gt/wp-content/uploads/2020/11/mcsc-guia-lideres-comunitarios.pdf";
+                break;
+            }
+            case "educavet":{
+                url = "https://meconectosinclavos.net.gt/wp-content/uploads/2020/11/GUIA-EDUCAVET.pdf";
+                break;
+            }
+            case "seguridad":{
+                url = "https://meconectosinclavos.net.gt/wp-content/uploads/2020/12/MINI-GUIA-DE-SEGURIDAD-EN-INTERNET.pdf";
+                break;
+            }
+        }
+        
+        Linking.canOpenURL(url)
+        .then(supported=>{  
+            if (supported) {
+                Linking.openURL(url)
+                .then(r=>{
+                    console.log("se abrio");
+                })
+                .catch(e=>{
+                    console.log("no se pudo abrir");
+                })
+            } else {
+                Alert.alert(`Don't know how to open this URL: ${url}`);
+            }      
+        })
+        .catch(e=>{
+            console.log("error:");
+            console.log(e);
+        })
+    }
 
 
 
@@ -233,6 +285,11 @@ export default function Listado(props){
                             <Text style={styles.tabitxt}>Ranking</Text>
                         </TouchableOpacity>
                     </View>
+                    <View style={(selView==3) ? [styles.tabi,styles.selectedtab] : styles.tabi}>
+                        <TouchableOpacity onPress={()=>setView(3)}>
+                            <Text style={styles.tabitxt}>Descargas</Text>
+                        </TouchableOpacity>
+                    </View>
             </View>
             {
             (selView==1) ?
@@ -241,21 +298,87 @@ export default function Listado(props){
                 renderItem={renderizable}
                 keyExtractor={item=>item.id}
                 />
-            :
+            : (selView==2) ?
                 <FlatList
                 data={topranking}
                 renderItem={renderizable2}
                 keyExtractor={item=>item.id}
                 />
-            }
-            <Modal visible={modalvisible} onRequestClose={()=>{}}>
-                <FormularioUsuarioNuevo userid={iuid.userid} onregister={()=>setModal(false)}></FormularioUsuarioNuevo>
-            </Modal>
+                :
+                <ScrollView>
+                    <Text style={styles.titulo1}>Descarga nuestro comic</Text>
+                    <TouchableOpacity onPress={()=>descarga('comic')} >
+                    <Image style={{width:ancho,height:(ancho*0.54)}} source={require("../assets/comic1.png")}/>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={()=>descarga('comic')} >
+                    <Text style={styles.descarga}>Descarga aquí</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.titulo2}>Guía de padres</Text>
+                    <TouchableOpacity onPress={()=>descarga('padres')} >
+                    <Image style={{width:ancho,height:(ancho*0.96)}} source={require("../assets/padres.png")}/>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={()=>descarga('padres')} >
+                    <Text style={styles.descarga}>Descarga aquí</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.titulo2}>Guía de educadores</Text>
+                    <TouchableOpacity onPress={()=>descarga('educadores')} >
+                    <Image style={{width:ancho,height:(ancho*0.96)}} source={require("../assets/educadores.jpg")}/>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={()=>descarga('educadores')} >
+                    <Text style={styles.descarga}>Descarga aquí</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.titulo2}>Guía de comunitarios</Text>
+                    <TouchableOpacity onPress={()=>descarga('comunitarios')} >
+                    <Image style={{width:ancho,height:(ancho*0.96)}} source={require("../assets/comunitarios.jpg")}/>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={()=>descarga('comunitarios')} >
+                    <Text style={styles.descarga}>Descarga aquí</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.titulo2}>Guía EDUCAVET</Text>
+                    <TouchableOpacity onPress={()=>descarga('educavet')} >
+                    <Image style={{width:ancho,height:(ancho*0.96)}} source={require("../assets/educavet.jpg")}/>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={()=>descarga('educavet')} >
+                    <Text style={styles.descarga}>Descarga aquí</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.titulo2}>Mini guía de seguridad</Text>
+                    <TouchableOpacity onPress={()=>descarga('seguridad')} >
+                    <Image style={{width:ancho,height:(ancho*0.96)}} source={require("../assets/guia.jpg")}/>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={()=>descarga('seguridad')} >
+                    <Text style={styles.descarga}>Descarga aquí</Text>
+                    </TouchableOpacity>
+                </ScrollView>
+            } 
         </View>
     )
 }
 
 const styles = StyleSheet.create({
+    descarga:{
+        textAlign:"center",
+        fontWeight:"bold",
+        textDecorationLine:"underline",
+        color:"#2064AC",
+        fontSize:20
+    },
+    titulo1:{
+        fontSize:14,
+        fontFamily:"DaysOne-Regular",
+        textAlign:"center",
+        backgroundColor:"#F6C015",
+        paddingTop:10,
+        paddingBottom:10
+    },
+    titulo2:{
+        fontSize:14,
+        fontFamily:"DaysOne-Regular",
+        textAlign:"center",
+        backgroundColor:"#F6C015",
+        paddingTop:10,
+        paddingBottom:10,
+        marginTop:25
+    },
     tabis:{
         flexDirection:'row',
         height:40
@@ -295,7 +418,7 @@ const styles = StyleSheet.create({
         marginBottom:10
     },
     t1:{
-      color:"#F6C015",
+      color:"#fff",
       opacity:1,
       fontSize:20,
       fontFamily:"DaysOne-Regular"
@@ -309,8 +432,8 @@ const styles = StyleSheet.create({
         marginRight:20
       },
     b1:{
-        backgroundColor: "#2064AC",
-        opacity:0.9,
+        backgroundColor: "#51A3DA",
+        opacity:1,
         height:50,
         flexDirection:"row",
         shadowColor: "#000",

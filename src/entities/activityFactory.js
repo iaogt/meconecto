@@ -3,53 +3,52 @@ export default class ActivityFactory {
         return [
             {
                 id:"sexting",
-                title:'Sexting',
-                subtitle:"¿Por qué el sexting es un peligro?",
-                sharetitle:"Evita el sexting",
+                title:'Los riesgos en las redes sociales',
+                subtitle:"Los riesgos en las redes sociales",
+                sharetitle:"Los riesgos en las redes sociales",
                 img:"https://meconectosinclavos.awelp.com/wp-content/uploads/2020/12/video-1-sexting.jpg",
-                url:"https://meconectosinclavos.awelp.com/wp-content/uploads/2020/11/video-1-sexting.mp4"
+                url:"https://meconectosinclavos.net.gt/wp-content/uploads/2020/11/video-1-sexting.mp4"
             },
             {
                 id:"juegos",
-                title:'Juegos Peligrosos',
+                title:'Los peligros en los juegos en línea',
                 subtitle:"¿Peligro en los juegos en línea?",
-                sharetitle:"Cuidado con los juegos en línea",
+                sharetitle:"Los peligros en los juegos en línea",
                 img:"https://meconectosinclavos.awelp.com/wp-content/uploads/2020/12/Video-3-los-juegos-en-linea-son-peligrosos.jpg",
                 url:"https://meconectosinclavos.awelp.com/wp-content/uploads/2020/11/Video-3-los-juegos-en-linea-son-peligrosos.mp4"
         
             },
             {
                 id:"publicidad",
-                title:'Publicidad',
-                subtitle:"¿Publicidad y control parental",
-                sharetitle:"Ten cuidado con la publicidad",
+                title:'Conocimiento de control parental',
+                subtitle:"Conocimiento de control parental",
+                sharetitle:"Conocimiento de control parental",
                 img:"https://meconectosinclavos.awelp.com/wp-content/uploads/2020/12/Video-4-privacidad-y-control-parental.jpg",
                 url:"https://meconectosinclavos.awelp.com/wp-content/uploads/2020/11/Video-4-privacidad-y-control-parental.mp4"
             },
             {
-                id:"desnudos",
-                title:'Desnudos',
-                subtitle:"¿Ten cuidado con los desnudos",
-                sharetitle:"Ten cuidado con los desnudos",
-                img:"https://meconectosinclavos.awelp.com/wp-content/uploads/2020/12/Video-5-alguien-me-presiona-para-enviar-ma%CC%81s-fotos-sin-ropa.jpg",
-                url:"https://meconectosinclavos.awelp.com/wp-content/uploads/2020/11/Video-5-alguien-me-presiona-para-enviar-más-fotos-sin-ropa.mp4"
+                id:"temolesta",
+                title:'Cómo protegerme de desconocidos',
+                subtitle:"Cómo protegerme de desconocidos",
+                sharetitle:"Cómo protegerme de desconocidos",
+                img:"https://meconectosinclavos.net.gt/wp-content/uploads/2020/12/Video-2-alguien-te-molesta-en-la-red-768x434.jpg",
+                url:"https://meconectosinclavos.net.gt/wp-content/uploads/2021/05/17.-Alguien-Te-Molesta-En-La-Red-1.m4v"
             },
             {
                 id:"sexual",
-                title:'Agresión Sexual',
-                subtitle:"¿Te han agredido sexualmente?",
-                sharetitle:"Evita la agresión sexual",
-                img:"https://meconectosinclavos.awelp.com/wp-content/uploads/2020/12/agresion-sexual-final.jpg",
-                url:"https://meconectosinclavos.awelp.com/wp-content/uploads/2020/12/agresion-sexual-final.mp4"
+                title:'Seguridad al navegar',
+                subtitle:"Seguridad al navegar",
+                sharetitle:"Seguridad al navegar",
+                img:"https://meconectosinclavos.net.gt/wp-content/uploads/2020/12/Video-5-alguien-me-presiona-para-enviar-más-fotos-sin-ropa-768x434.jpg",
+                url:"https://meconectosinclavos.net.gt/wp-content/uploads/2021/05/18.-Fotos-Sin-Ropa-1.m4v"
             },
             {
-                id:"exhibicionismo",
-                title:'Exhibicionismo',
-                subtitle:"Evita el exhibicionismo",
-                sharetitle:"Evita el exhibicionismo",
-                img:"https://meconectosinclavos.awelp.com/wp-content/uploads/2020/12/exhibicion-sexual-final.jpg",
-                url:"https://meconectosinclavos.awelp.com/wp-content/uploads/2020/12/exhibicion-sexual-final.mp4"
-        
+                id:"top5apps",
+                title:'Conocimiento top 5 apps',
+                subtitle:"Conocimiento top 5 apps",
+                sharetitle:"Conocimiento top 5 apps",
+                img:"https://meconectosinclavos.net.gt/wp-content/uploads/2020/12/Video-6-Top-5-apps-768x434.jpg",
+                url:"https://meconectosinclavos.net.gt/wp-content/uploads/2021/05/Top-55-Apps-1.mp4"
             }
         ];
     }

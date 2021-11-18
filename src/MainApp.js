@@ -1,4 +1,4 @@
-import { Button } from 'react-native';
+import { Button,StyleSheet } from 'react-native';
 import React,{useState,useEffect} from 'react';
 import auth from '@react-native-firebase/auth';
 import { HomeScreen, DetalleScreen, CuestionarioScreen, ResultadoScreen,RegisterScreen } from './screens'
@@ -24,9 +24,9 @@ export default function MainApp(){
     const homeOptions = {...commonOptions,headerRight: () => (
         <Button
             onPress={() => {
-            auth().signOut().then(()=>console.log("cerror sesi[on"))
+            auth().signOut().then(()=>console.log("cerrar sesión"))
             }}
-            title="Salir"/>
+            title="Salir" color="#51A3DA" style={{margin:15}}/>
     )}
 
     // Handle user state changes
@@ -54,7 +54,7 @@ export default function MainApp(){
                 (user) ?
                     (user.uid!="") ?
                         <>
-                        <Stack.Screen name="MeConectoSinClavos" component={HomeScreen} options={homeOptions}/>
+                        <Stack.Screen name="Me Conecto Sin Clavos" component={HomeScreen} options={homeOptions}/>
                         <Stack.Screen name="Detalle" component={DetalleScreen} options={commonOptions}/>
                         <Stack.Screen name="Compite" component={CuestionarioScreen} options={commonOptions}/>
                         <Stack.Screen name="Resultado" component={ResultadoScreen} options={commonOptions}/>
@@ -65,10 +65,19 @@ export default function MainApp(){
                     </View>
                 :
                 <>
-                <Stack.Screen name="MeConectoSinClavos" component={RegisterScreen} options={commonOptions}/>
+                <Stack.Screen name="MeConecto Sin Clavos" component={RegisterScreen} options={commonOptions}/>
                 </>
                 }
             </Stack.Navigator>
         </NavigationContainer>
     )
 }
+
+
+const styles = StyleSheet.create({
+    btnCerrar: {
+      backgroundColor:"#51A3DA",
+      color:"#fff",
+      marginRight:5
+    }
+  });

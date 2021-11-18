@@ -7,13 +7,15 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useSelector,useDispatch} from 'react-redux';
 import ActivityFactory from '../entities/activityFactory';
 import MessageFactory from '../entities/messageFactory';
+import Clipboard from '@react-native-clipboard/clipboard';
+
 import {
     SCLAlert,
     SCLAlertButton
   } from 'react-native-scl-alert'
 
 export default function Detalle(props){
-    const [play,setPlay] = useState(true);
+    const [play,setPlay] = useState(false);
     const [userdata,setData] = useState(null);
 
     const sel1 = state => state.activities;
@@ -38,7 +40,8 @@ export default function Detalle(props){
     let player = null;
 
     useLayoutEffect(()=>{
-        let dataCompetencia = iuid.data.competencias[selected.selected];
+        console.log(props);
+        let dataCompetencia = iuid.data.competencias[props.comp];
         console.log(dataCompetencia);
         if(dataCompetencia!=undefined){
             dispatch({type:"activity/competencia",payload:dataCompetencia})
@@ -53,7 +56,7 @@ export default function Detalle(props){
                 }
             }
         }
-        setPlay(true);
+        //setPlay(true);
     },[])
 
     const refPlayer = (ref)=>{
@@ -106,7 +109,7 @@ export default function Detalle(props){
                 break;
             }
             case "escribe":{
-                const url = "https://www.tidio.com/talk/xq7xycncoaabqszv1rdca1trrdzzxpy6";
+                const url = "https://wa.link/xepyys";
                 Linking.canOpenURL(url)
                 .then(supported=>{  
                     if (supported) {
@@ -183,7 +186,7 @@ export default function Detalle(props){
                 : 
                     <ImageBackground source={{uri:ActivityFactory.getPoster(selected.selected)}} style={styles.detalleimg1}>
                     <View style={styles.buttonPlay}>
-                        <TouchableOpacity onPress={this.playVideo}>
+                        <TouchableOpacity onPress={playVideo}>
                             <Image source={require('../assets/thumbs/play-icon-white-png-4.jpg')} style={styles.imgplay}/>
                         </TouchableOpacity>
                     </View>
@@ -195,28 +198,28 @@ export default function Detalle(props){
                 <View style={styles.grid1}>
                     <View style={styles.activity}>
                         <TouchableOpacity onPress={()=>acciona('compite')} style={styles.activity}>
-                            <Icon name="bullseye" size={30} color="#0a0" />
-                            <Text>Compite</Text>
+                            <Image source={require('../assets/icon_compite.png')} style={styles.imgIcon}/>
+                            <Text style={styles.btnAct}>Compite</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.activity}>
                         <TouchableOpacity onPress={()=>acciona('comparte')} style={styles.activity}>
-                            <Icon name="share-alt" size={30} style={(comparte) ? {"color":"#0a0"}: {"color":"#ced4da"}}  />
-                            <Text>Comparte</Text> 
+                            <Image source={require('../assets/icon_share.png')} style={styles.imgIcon}/>  
+                            <Text style={styles.btnAct}>Comparte</Text> 
                         </TouchableOpacity>
                     </View>
                 </View>
                 <View style={styles.grid1}>
                     <View style={styles.activity}>
                         <TouchableOpacity onPress={()=>acciona('invita')} style={styles.activity}>
-                            <Icon name="users" size={30} style={(invita) ? {"color":"#0a0"}: {"color":"#ced4da"}}/>
-                            <Text>Invita</Text> 
+                            <Image source={require('../assets/icon_invita.png')} style={styles.imgIcon}/>
+                            <Text style={styles.btnAct}>Invita</Text> 
                         </TouchableOpacity>
                     </View>
                     <View style={styles.activity}>
                         <TouchableOpacity onPress={()=>acciona('escribe')} style={styles.activity}>
-                            <Icon name="comments" size={30} style={(escribe) ? {"color":"#0a0"}: {"color":"#ced4da"}}/>
-                            <Text>¿Necesitas ayuda?</Text> 
+                            <Image source={require('../assets/icon_escribe.png')} style={styles.imgIcon}/>
+                            <Text style={styles.btnAct}>¿Necesitas ayuda?</Text> 
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -228,9 +231,9 @@ export default function Detalle(props){
                 subtitle={eltitle}
                 onRequestClose={cierra3}>
                 <View>
-                    <TextInput style={styles.linkComparte} value={ellink} editable={false}></TextInput>
+                    <TextInput style={styles.linkComparte} value={ellink}></TextInput>
                 </View>
-                <SCLAlertButton theme="info" onPress={()=>{ showSharing(false) }} >Aceptar</SCLAlertButton>
+                <SCLAlertButton theme="info" onPress={()=>{ Clipboard.setString(ellink);showSharing(false) }} >Aceptar</SCLAlertButton>
             </SCLAlert>
             <SCLAlert
                 theme="success"
@@ -256,8 +259,14 @@ const styles = StyleSheet.create({
         resizeMode:"cover",
         justifyContent:"flex-end"    
     },
+    imgIcon:{
+        width:70,
+        height:70,
+        marginBottom:10
+    },
     detalleitem1:{
-        flexDirection:"column"  
+        flexDirection:"column",
+        backgroundColor:"#246BA6"
     },
     buttonPlay:{
         flex:1,
@@ -270,14 +279,14 @@ const styles = StyleSheet.create({
         height:100
     },
     txtTitulo:{
-        color:"#fff",
+        color:"#2064AC",
         fontSize:18,
-        marginLeft:10,
-        paddingTop:5,
-        paddingBottom:5,
+        justifyContent:"center",
+        textAlign:"center",
+        padding:10
     },
     barraSub:{
-        backgroundColor:"#86509b",
+        backgroundColor:"#E6E6E6",
     },
     barraSubtitle:{
         shadowColor: "#f00",
@@ -293,10 +302,8 @@ const styles = StyleSheet.create({
     subtitle:{
         color:"#fff",
         fontSize:18,
-        marginLeft:5,
-        marginTop:3,
-        marginBottom:3
-        
+        backgroundColor:"#51A3DA",
+        textAlign:"center"
     },
     grid1:{
         flex:1,
@@ -306,7 +313,7 @@ const styles = StyleSheet.create({
         width:"50%",
         alignItems:'center',
         justifyContent:'center',
-        height:100
+        height:120
     },
     modalSharing:{
         backgroundColor:"rgba(20,70,122,0.7)",
@@ -331,6 +338,10 @@ const styles = StyleSheet.create({
         color:"#000",
         borderColor:"#000",
         borderWidth:1
+    },
+    btnAct:{
+        color:"#fff",
+        fontWeight:'bold',
+        textAlign:"center"
     }
-
 })

@@ -22,7 +22,9 @@ export default class UserFactory {
                 'publicidad':objCompetencia,
                 'desnudos':objCompetencia,
                 'sexual':objCompetencia,
-                'exhibicionismo':objCompetencia
+                'exhibicionismo':objCompetencia,
+                'top5apps':objCompetencia,
+                'temolesta':objCompetencia
             }
         }
     }

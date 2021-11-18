@@ -9,6 +9,8 @@ export default class UserEntity {
             database().ref('/users/'+userid)
             .once('value')
             .then(snap=>{
+                console.log("Se cargo la data del usuario, es esta:");
+                console.log(snap.val());
                 resolve(snap.val())
             })
             .catch(e=>{
@@ -45,5 +47,40 @@ export default class UserEntity {
             resolve(false);
             })
         })
+    }
+
+    static updateCompetitions(userid,competitionsData){
+        return database().ref('/users/'+userid).set(competitionsData)
+    }
+
+    /*
+        Sorts and filters data
+     */
+    static getRanking(){
+        let collRank = {};
+        return new Promise((resolve,reject)=>{
+            let dbRef = database().ref("users")
+            dbRef.orderByKey().on("value",function(snapshot){ 
+                let data2 = snapshot.val();
+                let datos = Object.keys(data2).map(ky=>{
+                    let data = data2[ky];
+                    let userPoints=0;
+                    if(data['competencias']!=undefined){
+                        let k = Object.keys(data['competencias']);
+                        userPoints = k.map(ke=>(data['competencias'][ke]['punteo']!=undefined) ? data['competencias'][ke]['punteo'] : 0).reduce((acc,i)=>acc+i,0);
+                    }
+                    if(data['ubicacion']!=""){
+                        let arrPoints = collRank[data['ubicacion']];
+                        if(arrPoints==undefined){
+                            arrPoints=userPoints;
+                        }else{
+                            arrPoints = arrPoints + userPoints;
+                        }
+                        collRank[data['ubicacion']]=arrPoints;
+                    }
+                })
+                resolve(collRank);
+            })           
+        });
     }
 }
